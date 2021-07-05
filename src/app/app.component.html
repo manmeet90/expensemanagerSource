@@ -1,0 +1,28 @@
+<div id="site-wrapper">
+  <nav>
+    <div class="nav-wrapper deep-purple">
+      <a routerLink="expenses" class="brand-logo hide-on-small-only">{{title}}</a>
+      <span id="mob_title" class="center-align text-bold">{{title}}</span>
+      <a *ngIf="isLoggedIn" href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      <ul class="right hide-on-med-and-down">
+        <li *ngIf="isLoggedIn"><a class="sidenav-close" routerLink="expenses">Show All Expenses</a></li>
+          <li *ngIf="isLoggedIn"><a class="sidenav-close" routerLink="create">Create New Expense</a></li>
+          <li *ngIf="isLoggedIn"><a class="sidenav-close" routerLink="reports">Reports</a></li>
+          <li *ngIf="isLoggedIn"><a class="sidenav-close" href="" (click)="signOut($event)">Sign Out</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <ul class="sidenav" id="mobile-nav">
+    <li *ngIf="isLoggedIn"><a routerLink="expenses">Show All Expenses</a></li>
+          <li *ngIf="isLoggedIn"><a class="sidenav-close" routerLink="create">Create New Expense</a></li>
+          <li *ngIf="isLoggedIn"><a class="sidenav-close" routerLink="reports">Reports</a></li>
+          <li *ngIf="isLoggedIn"><a class="sidenav-close" href="" (click)="signOut($event)">Sign Out</a></li>
+  </ul>
+  <section id="main">
+    <router-outlet></router-outlet>
+  </section>
+  <div id="footer">
+
+  </div>
+</div>

@@ -1,0 +1,122 @@
+<div class="row">
+  <style>
+
+    table tbody tr:nth-last-child(2) {
+      background-color: #00acc1;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    table tbody tr:last-child {
+      color: #fff;
+      background-color: #43A047;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    table tbody tr:nth-last-child(3) {
+      background-color: #d24c51;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    #earnings_form>div {
+      margin: 7px 0;
+
+    }
+
+    select {
+        display: inline-block !important;
+    }
+
+    .cursor{
+      cursor: pointer;
+    }
+  </style>
+  <div class="col s12" id="earnings_form">
+    <h4>Set Earnings</h4>
+    <div class="col s12">
+      <select class="" name="earn_year" id="earn_year" (change)='onEarnYearChange($event)'>
+        <option value="">Choose Year</option>
+        <option *ngFor='let year of years' [value]="year">{{year}}</option>
+      </select>
+      <label for="earn_year">Year</label>
+    </div>
+    <div class="col s12">
+      <select class="" name="earn_month" id="earn_month" (change)='onEarnMonthChange($event)'>
+        <option value="">Choose Month</option>
+        <option *ngFor='let month of months' [value]="month">{{month}}</option>
+      </select>
+      <label for="earn_month">Month</label>
+    </div>
+    <div class="input-field col s12">
+      <input type="number" class="form-control" name="earning" id="earning" [value]="earning"
+        (input)='onEarningChange($event)' />
+        <label for="earning">Earnings (INR)</label>
+    </div>
+    <div class="col s12">
+      <button class="btn  waves-effect waves-light" [disabled]="!isEarningFormValid()"
+        (click)='onSaveEarningBtnClicked()'>Save</button>
+    </div>
+  </div>
+
+
+  <div class="col s12">
+    <h4>Monthly Reports</h4>
+    <!-- Generate Report For: -->
+    <div class="col s12">
+      <select class="" name="year" id="year" (change)='onYearChange($event)'>
+        <option value="">Choose Year</option>
+        <option *ngFor='let year of years' [value]="year">{{year}}</option>
+      </select>
+      <label for="year">Year</label>
+      </div>
+      <div class="col s12">
+          <select class="" name="month" id="month" (change)='onMonthChange($event)'>
+              <option value="">Choose Month</option>
+              <option *ngFor='let month of months' [value]="month">{{month}}</option>
+            </select>
+            <label for="month">Month</label>
+      </div>
+      <div class="col s12">
+          <button class="btn  waves-effect waves-light" [disabled]="!isFormValid()" (click)='generateReportBtnClicked()'>Generate
+              Report</button>
+      </div>
+
+  </div>
+  <br>
+  <div class="col s12">
+    <table *ngIf="reportData.expensesByType.length>0" class="striped table table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Expense Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="{{report.expenseType}}" *ngFor="let report of reportData.expensesByType">
+          <td>{{report.expenseType}}</td>
+          <td><a class="cursor" (click)="onExepenseCategoryRowClicked($event, report.expenseType)">{{toLocale(report.total)}}</a></td>
+        </tr>
+        <tr>
+          <td>Expenditure</td>
+          <td>{{toLocale(reportData.totalExpenditure)}}</td>
+        </tr>
+        <tr>
+          <td>Earnings</td>
+          <td>{{toLocale(reportData.totalIncome)}}</td>
+        </tr>
+        <tr>
+          <td>Saved</td>
+          <td>{{toLocale(reportData.totalIncome-reportData.totalExpenditure)}}</td>
+        </tr>
+
+      </tbody>
+    </table>
+    <div class="chart-container" style="">
+      <canvas id="myChart"></canvas>
+    </div>
+
+  </div>
+</div>

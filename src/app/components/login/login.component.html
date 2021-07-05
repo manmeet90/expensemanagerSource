@@ -1,0 +1,24 @@
+<style>
+  #loginform{
+      margin: 0 10px;
+  }
+</style>
+<div class="row">
+  <div class="col s12 m6 ">
+      <form id="loginform">
+          <h3>Login</h3>
+          <div *ngIf="loginError" class="alert col s12 m6 red white-text">
+              {{message}}
+          </div>
+          <div class="input-field col s12">
+            <input #email type="text" class="form-control" (input)="updateLoginBtnState(email.value, password.value)" id="emailid">
+            <label for="emailid">Email Address</label>
+          </div>
+          <div class="input-field col s12">
+            <input #password type="password" class="form-control" (input)="updateLoginBtnState(email.value, password.value)" id="paswrd">
+            <label for="paswrd">Password</label>
+          </div>
+          <button type="submit" [disabled]="disableLoginBtn || loginInProgress" class="btn waves-effect waves-light" (click)="onLoginButtonClicked($event, email.value, password.value)">{{loginButtonText ? loginButtonText : 'Login'}}</button>
+        </form>
+  </div>
+</div>

@@ -1,0 +1,95 @@
+<style>
+  .delete_icon {
+      position: relative;
+      top: 5px;
+      left: 5px;
+  }
+  .collapsible-body{
+      /* overflow: hidden; */
+  }
+  select {
+      display: inline-block !important;
+  }
+  .cursor{
+      cursor: pointer;
+  }
+</style>
+<div class="row">
+  <br />
+  <div class="col s12">
+      <ul class="collapsible">
+          <li>
+              <div class="collapsible-header"><i class="material-icons">filter_list</i>Apply FIlter</div>
+              <div class="collapsible-body">
+                      <div class="row">
+                          <div class="col s12 m4">
+                                  <select class="form-control" name="year" id="year" #year
+                                      (change)="filterList(year.value, month.value, expenseType.value)">
+                                      <option value="">Choose Year</option>
+                                      <option *ngFor='let year of years' [value]="year">{{year}}</option>
+                                  </select>
+                                  <label for="year">Year </label>
+                          </div>
+                          <div class="col s12 m4">
+                              <select class="form-control" name="month" id="month" #month
+                                  (change)="filterList(year.value, month.value, expenseType.value)">
+                                  <option value="">Choose Month</option>
+                                  <option *ngFor='let month of months' [value]="month">{{month}}</option>
+                              </select>
+                              <label for="month">Month </label>&nbsp;
+                          </div>
+                          <div class="col s12 m4">
+                              <select class="form-control" name="expenseType" id="expenseType" #expenseType
+                                  (change)="filterList(year.value, month.value, expenseType.value)">
+                                  <option value="">Choose Type</option>
+                                  <option *ngFor='let expenseType of expenseTypes' [value]="expenseType.id">{{expenseType.name}}
+                                  </option>
+                              </select>
+                              <label for="expenseType">Expense Type </label>&nbsp;
+                          </div>
+                      </div>
+              </div>
+          </li>
+      </ul>
+  </div>
+  <div *ngIf="this.queryParams && this.queryParams.year" class="col s12">
+      <a class="cursor" (click)="onBackToReportsLinkClicked($event)">Back To Reports</a>
+  </div>
+  <div class="col s12 table-responsive">
+      <table class="table striped">
+          <thead>
+              <tr>
+                  <th>Expense Name</th>
+                  <th>Amount</th>
+                  <th class="hide-on-small-only">Year</th>
+                  <th class="hide-on-small-only">Month</th>
+                  <th>Date</th>
+                  <th class="hide-on-small-only">Expense Type</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr class="cyan darken-1">
+                  <td colspan='6' class='white-text text-bold'>Total Expenditure: <strong>{{toLocale(total)}}</strong></td>
+              </tr>
+              <tr>
+                  <td colspan='6' *ngIf='isLoading'>Loading...</td>
+              </tr>
+              <tr *ngFor='let expense of expenses'>
+                  <td>
+                      <a>{{expense.description}}</a>
+                      <span class="cursor material-icons red-text delete_icon"
+                          (click)="ondeleteButtonClicked(expense)">delete</span>
+                  </td>
+                  <td>{{toLocale(expense.amount)}}</td>
+                  <td class="hide-on-small-only">{{expense.year}}</td>
+                  <td class="hide-on-small-only">{{expense.month}}</td>
+                  <td>{{expense.date}}</td>
+                  <td class="hide-on-small-only">{{getExpenseTypeString(expense.expenseType)}}</td>
+              </tr>
+              <tr class="cyan darken-1">
+                  <td colspan='6' class='white-text text-bold'>Total Expenditure: <strong>{{toLocale(total)}}</strong></td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+</div>

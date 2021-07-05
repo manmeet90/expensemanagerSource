@@ -1,0 +1,117 @@
+<style>
+  #expenseform {
+      margin: 0 15px;
+      width: 80vw;
+  }
+  #expensetype_form_wrapper{
+      overflow:hidden;
+  }
+  select {
+      display: inline-block !important;
+  }
+  @media only screen and (max-width: 600px) {
+      .expensetypeBtn{
+          margin-top : 10px;
+      }
+  }
+
+</style>
+<div id="expenseform" class="row">
+  <h4>Create New Expense</h4>
+  <div *ngIf='showMsg' class="alert col s12 m6 green white-text">
+      Expense saved successfully
+  </div>
+  <div *ngIf="isLoading">Loading...</div>
+  <form *ngIf="!isLoading" [formGroup]='expenseForm'>
+      <div class="input-field col s12 m6">
+          <!-- <dp-date-picker formControlName="date" #dayPicker></dp-date-picker> -->
+          <input type="text" class=" datepicker" formControlName="date" id="date" />
+          <label for="date" class="active">Expense Date</label>
+
+      </div>
+      <div class="input-field col s12 m6">
+          <input type="text" class="form-control" id="description" formControlName="description" />
+          <label for="description">Expense Description</label>
+          <span class="alert white-text red"
+              *ngIf='expenseForm.controls.description.touched && expenseForm.controls.description.errors?.required'>Expense
+              Description is required</span>
+      </div>
+      <div class="input-field col s12 m6">
+          <input type="number" class="form-control" id="description" formControlName="amount" />
+          <label for="description">Amount</label>
+          <span class="alert white-text red"
+              *ngIf='expenseForm.controls.amount.touched && expenseForm.controls.amount.errors?.required'>Amount is
+              required</span>
+
+      </div>
+      <div class="col s12 m6">
+          <select formControlName='expenseType' class='form-control' name="expense_type" id="expense_type">
+              <option *ngFor='let expenseType of expenseTypes' [value]="expenseType.id">{{expenseType.name}}
+              </option>
+          </select>
+          <label for="expense_type">Expense Type</label>
+      </div>
+      <div class="input-field col s12">
+          <input type="text" class="form-control" id="remarks"
+              formControlName="remarks" />
+          <label for="remarks">Remarks</label>
+      </div>
+      <div class="col s12">
+          <div class="row">
+              <div class='col m2 s12 '>
+                  <button type="submit" class="btn waves-effect waves-light" [disabled]='expenseForm.invalid'
+              (click)='onCreateButtonClicked()'>Create</button>
+              </div>
+              <div class='col m4 s12 '>
+                  <button type="button" data-target="createExpenseTypeDialog" class=" modal-trigger btn waves-effect waves-light expensetypeBtn blue darken-1">
+                      Manage Expense Type
+                  </button>
+              </div>
+
+
+          </div>
+
+      </div>
+
+  </form>
+  <div id="createExpenseTypeDialog" class="modal">
+      <div class="modal-content">
+        <h4>Manage Expense Types</h4>
+        <div id="expensetype_form_wrapper">
+            <form *ngIf="!isLoading" [formGroup]='expenseTypeForm'>
+              <div class="input-field col s12">
+                  <input type="text" class="form-control" id="newExpenseType"
+                      formControlName="newExpenseType" />
+                  <label for="newExpenseType">Expense Type to create</label>
+              </div>
+              <hr />
+              <div class="col s12">
+                  <select formControlName='expenseType' class='form-control' name="expenseType" id="expenseType">
+                      <option *ngFor='let expenseType of expenseTypes' [value]="expenseType.id">{{expenseType.name}}
+                      </option>
+                  </select>
+                  <label for="expenseType">Expense Type to delete</label>
+              </div>
+              <div class="input-field col s12">
+                  <input type="text" class="form-control" id="newName"
+                      formControlName="newName" />
+                  <label for="newName">Expense Type updated name</label>
+              </div>
+            </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+          <div class="row">
+              <div class="col s4 m2">
+                  <button class="modal-close waves-effect btn waves-red" (click)="onDeleteExpenseTypeBtnClicked()">Delete</button>
+              </div>
+              <div class="col s4 m2">
+                  <button class="modal-close waves-effect btn waves-green" (click)="onUpdateExpenseTypeBtnClicked()">Update</button>
+              </div>
+              <div class="col s4 m2">
+                  <button class="modal-close waves-effect btn waves-green" (click)="onCreateExpenseTypeBtnClicked()">Create</button>
+              </div>
+          </div>
+      </div>
+    </div>
+</div>
