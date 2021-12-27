@@ -1,0 +1,25 @@
+.sort-icon{
+    cursor: pointer;
+}
+
+.sort-icon .fas {
+    padding-left: 3px;
+}
+
+.sort-icon .fas.dsc {
+    transform: rotateX(180deg);
+}
+
+.sticky {
+    position: sticky;
+    z-index:99;
+}
+
+.sticky-header {
+    top: 0;
+    background-color: #fff;
+}
+
+.sticky-amount {
+    top: 50px;
+}

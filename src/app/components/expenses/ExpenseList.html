@@ -55,26 +55,33 @@
   <div *ngIf="this.queryParams && this.queryParams.year" class="col s12">
       <a class="cursor" (click)="onBackToReportsLinkClicked($event)">Back To Reports</a>
   </div>
+  <div class="col s12">
+    <input type="text" [(ngModel)]="searchTerm" placeholder="search by expense name" />
+  </div>
   <div class="col s12 table-responsive">
       <table class="table striped">
-          <thead>
+          <thead class="sticky sticky-header">
               <tr>
                   <th>Expense Name</th>
-                  <th>Amount</th>
+                  <th (click)="sortByAmountClicked()" class="sort-icon">Amount
+                    <i [class.dsc]="currentAmountSortBy === 2" class="fas fa-arrow-up"></i>
+                  </th>
                   <th class="hide-on-small-only">Year</th>
                   <th class="hide-on-small-only">Month</th>
-                  <th>Date</th>
+                  <th (click)="sortByDateClicked()" class="sort-icon">Date
+                    <i [class.dsc]="currentDateSortBy === 2" class="fas fa-arrow-up"></i>
+                  </th>
                   <th class="hide-on-small-only">Expense Type</th>
               </tr>
           </thead>
           <tbody>
-              <tr class="cyan darken-1">
+              <tr class="cyan darken-1 sticky sticky-amount">
                   <td colspan='6' class='white-text text-bold'>Total Expenditure: <strong>{{toLocale(total)}}</strong></td>
               </tr>
               <tr>
                   <td colspan='6' *ngIf='isLoading'>Loading...</td>
               </tr>
-              <tr *ngFor='let expense of expenses'>
+              <tr *ngFor='let expense of expenses | filterBySearch: searchTerm'>
                   <td>
                       <a>{{expense.description}}</a>
                       <span class="cursor material-icons red-text delete_icon"

@@ -1,0 +1,23 @@
+.sort-icon{
+    cursor: pointer;
+}
+
+.sort-icon .fas {
+    padding-left: 3px;
+}
+
+.sort-icon .fas.dsc {
+    transform: rotateX(180deg);
+}
+
+.overspent {
+    background-color: #ed30065e;
+}
+
+.report_type_sel{
+    margin-bottom: 20px;
+}
+
+.report_type_sel label:last-child{
+    padding-left: 10px;
+}

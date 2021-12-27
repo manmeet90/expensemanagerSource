@@ -1,12 +1,15 @@
 import { Component, OnInit } from "@angular/core";
 import {ExpenseService} from '../../services/expense.service';
-import {groupBy, sortBy, reverse} from 'lodash';
+import {sortBy, orderBy} from 'lodash';
 import {ExpenseType, ExpenseListItem} from './expenseType';
 import { ActivatedRoute, Router } from '@angular/router';
 declare var $ : any;
 declare var M : any;
+import {SortOrder} from '../../utils/utils';
+
 @Component({
-    templateUrl : './ExpenseList.html'
+    templateUrl : './ExpenseList.html',
+    styleUrls: ['./expenseList.css']
 })
 export class ExpenseListComponent implements OnInit{
     private _data =[];
@@ -18,6 +21,10 @@ export class ExpenseListComponent implements OnInit{
     isLoading: boolean = false;
     public sub: any = null;
     public queryParams = null;
+    public searchTerm = '';
+
+    public currentDateSortBy: SortOrder = SortOrder.ASC;
+    public currentAmountSortBy: SortOrder = SortOrder.ASC;
 
     constructor(private expenseService: ExpenseService,
         private expenseType: ExpenseType,
@@ -70,7 +77,7 @@ export class ExpenseListComponent implements OnInit{
         this.expenseService.getExpensesByYearAndMonth(_d.getFullYear(), this.months[_d.getMonth()])
         .then(res => {
             if(res.data.items) {
-                this.expenses = res.data.items;
+                this.expenses = this.normalizeData(res.data.items);
                 this._data = this.expenses;
                 this.total = this.calculateTotal();
 
@@ -94,7 +101,7 @@ export class ExpenseListComponent implements OnInit{
         this.expenseService.getAllExpenses()
         .then(res => {
             if(res.data.items) {
-                let data = res.data.items;
+                let data = this.normalizeData(res.data.items);
                 res.data.items.forEach(item => {
                     if(this.years.indexOf(item.year) == -1){
                         this.years.push(item.year);
@@ -192,7 +199,7 @@ export class ExpenseListComponent implements OnInit{
         return total;
     }
 
-    sortDataByDate(data) {
+    sortDataByDate(data, sortOrder = this.currentDateSortBy) {
         return sortBy(data, (_d) => {
             if(_d.date) {
                 let parts = _d.date.split('-');
@@ -209,7 +216,7 @@ export class ExpenseListComponent implements OnInit{
                 return -1;
             }
 
-        });
+        }, sortOrder === SortOrder.DSC ? true : false);
     }
 
     ondeleteButtonClicked(expense) {
@@ -245,5 +252,49 @@ export class ExpenseListComponent implements OnInit{
             }
         }
         return null;
+    }
+
+    sortByDateClicked() {
+        if(this.expenses.length > 0 && this.currentDateSortBy) {
+            this.currentDateSortBy =  this.currentDateSortBy === SortOrder.ASC ? SortOrder.DSC : SortOrder.ASC;
+            switch(this.currentDateSortBy) {
+                case SortOrder.DSC: {
+                    this.expenses = orderBy(this.expenses, (d) => d.dateInstance.getTime(), ['desc']);
+                    break;
+                }
+
+                default : {
+                    this.expenses = orderBy(this.expenses, (d) => d.dateInstance.getTime(), ['asc']);
+                }
+            }
+        }
+    }
+
+    sortByAmountClicked() {
+        if(this.expenses.length > 0 && this.currentAmountSortBy) {
+            this.currentAmountSortBy =  this.currentAmountSortBy === SortOrder.ASC ? SortOrder.DSC : SortOrder.ASC;
+            switch(this.currentAmountSortBy) {
+                case SortOrder.DSC: {
+                    this.expenses = orderBy(this.expenses, (d) => d.amount, ['desc']);
+                    break;
+                }
+
+                default : {
+                    this.expenses = orderBy(this.expenses, (d) => d.amount, ['asc']);
+                }
+            }
+        }
+    }
+
+    normalizeData(data) {
+        if(data.length > 0) {
+            data.forEach(d => {
+                if(d.date) {
+                    let parts = d.date.split('-');
+                    d.dateInstance = new Date(parts[2],Number(parts[1])-1, parts[0]);
+                }
+            });
+        }
+        return data;
     }
 }

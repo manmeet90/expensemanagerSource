@@ -63,14 +63,25 @@
 
 
   <div class="col s12">
-    <h4>Monthly Reports</h4>
+    <h4>Generate Reports</h4>
     <!-- Generate Report For: -->
-    <div class="col s12">
-      <select class="" name="year" id="year" (change)='onYearChange($event)'>
-        <option value="">Choose Year</option>
-        <option *ngFor='let year of years' [value]="year">{{year}}</option>
-      </select>
-      <label for="year">Year</label>
+    <div class="col s12 report_type_sel">
+      <label>
+        <input name="reportType" (change)="onReportCategoryChange(1)" type="radio" checked />
+        <span>For a Duration</span>
+      </label>
+      <label>
+        <input name="reportType" type="radio" (change)="onReportCategoryChange(2)" />
+        <span>For an ExpenseType</span>
+      </label>
+    </div>
+    <div *ngIf="reportType === 1">
+      <div class="col s12">
+        <select class="" name="year" id="year" (change)='onYearChange($event)'>
+          <option value="">Choose Year</option>
+          <option *ngFor='let year of years' [value]="year">{{year}}</option>
+        </select>
+        <label for="year">Year</label>
       </div>
       <div class="col s12">
           <select class="" name="month" id="month" (change)='onMonthChange($event)'>
@@ -79,23 +90,37 @@
             </select>
             <label for="month">Month</label>
       </div>
+    </div>
+    <div *ngIf="reportType === 2">
       <div class="col s12">
-          <button class="btn  waves-effect waves-light" [disabled]="!isFormValid()" (click)='generateReportBtnClicked()'>Generate
-              Report</button>
+        <label for="expense_type_sel">Select Expense Type</label>
+        <select id="expense_type_sel" name="expense_type_sel" [(ngModel)]="currentExpenseTypeForReport">
+          <option value="{{expenseType.value}}" *ngFor="let expenseType of expenseTypes">{{expenseType.name}}</option>
+        </select>  
       </div>
-
+      <div class="col s12">
+        <label for="duration_input">Enter Duration</label>
+        <input type="text" placeholder="yyyy-yyyy" [(ngModel)]="currentDurationForReport" name="duration_input" />
+      </div>
+    </div>
+    <div class="col s12">
+        <button class="btn  waves-effect waves-light" [disabled]="!isFormValid()" (click)='generateReportBtnClicked()'>Generate
+            Report</button>
+    </div>
   </div>
   <br>
   <div class="col s12">
-    <table *ngIf="reportData.expensesByType.length>0" class="striped table table-bordered table-condensed">
+    <table *ngIf="reportData?.expensesByType?.length>0 && reportType === 1" class="striped table table-bordered table-condensed">
       <thead>
         <tr>
           <th>Category</th>
-          <th>Expense Amount</th>
+          <th class="sort-icon" (click)="sortByAmountClicked()">Expense Amount
+            <i [class.dsc]="currentAmountSortBy === 2" class="fas fa-arrow-up"></i>
+          </th>
         </tr>
       </thead>
       <tbody>
-        <tr id="{{report.expenseType}}" *ngFor="let report of reportData.expensesByType">
+        <tr [class.overspent]="month && report.total > 5000" id="{{report.expenseType}}" *ngFor="let report of reportData.expensesByType">
           <td>{{report.expenseType}}</td>
           <td><a class="cursor" (click)="onExepenseCategoryRowClicked($event, report.expenseType)">{{toLocale(report.total)}}</a></td>
         </tr>

@@ -11,6 +11,7 @@ import {ReportsComponent} from './components/reports/Reports.component';
 import {CreateExpenseComponent, ExpenseComponent, ExpenseListComponent, ExpenseType} from './components/expenses';
 import {ExpenseService} from './services/expense.service';
 import {AuthGuard} from './services/auth.service';
+import {FilterBySearchPipe} from './components/expenses/filterBySearchPipe';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import {AuthGuard} from './services/auth.service';
     ReportsComponent,
     CreateExpenseComponent,
     ExpenseComponent,
-    ExpenseListComponent
+    ExpenseListComponent,
+    FilterBySearchPipe
   ],
   imports: [
     APP_ROUTES,
@@ -32,7 +34,8 @@ import {AuthGuard} from './services/auth.service';
   providers: [
     ExpenseType,
     ExpenseService,
-    AuthGuard
+    AuthGuard,
+    FilterBySearchPipe
   ],
   bootstrap: [AppComponent]
 })

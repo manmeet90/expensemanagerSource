@@ -1,52 +1,52 @@
 export let utils: any = {
   getMonthFromMonthName : (monthName) => {
     let result: string;
-    switch(monthName) {
-      case "Jan" : {
+    switch(monthName.toLowerCase()) {
+      case "jan" : {
         result = "01";
         break;
       }
-      case "Feb" : {
+      case "feb" : {
         result = "02";
         break;
       }
-      case "Mar" : {
+      case "mar" : {
         result = "03";
         break;
       }
-      case "Apr" : {
+      case "apr" : {
         result = "04";
         break;
       }
-      case "May" : {
+      case "may" : {
         result = "05";
         break;
       }
-      case "Jun" : {
+      case "jun" : {
         result = "06";
         break;
       }
-      case "Jul" : {
+      case "jul" : {
         result = "07";
         break;
       }
-      case "Aug" : {
+      case "aug" : {
         result = "08";
         break;
       }
-      case "Sep" : {
+      case "sep" : {
         result = "09";
         break;
       }
-      case "Oct" : {
+      case "oct" : {
         result = "10";
         break;
       }
-      case "Nov" : {
+      case "nov" : {
         result = "11";
         break;
       }
-      case "Dec" : {
+      case "dec" : {
         result = "12";
         break;
       }
@@ -54,4 +54,8 @@ export let utils: any = {
 
     return result;
   }
+};
+
+export enum SortOrder {
+  ASC = 1 , DSC = 2
 };

@@ -175,13 +175,15 @@ export class ExpenseService {
         }).then(res => res.json());
     }
 
-    getExpenseReport(year, month){
-        let payload = {
-            filter:{
-                year:parseInt(year,10),
-                month: month ? month : null
-            }
-        };
+    getExpenseReport(filter){
+        if(filter.year && ! filter.expenseType) {
+            filter.year = parseInt(filter.year, 10);
+            filter.month = filter.month || null; 
+        } else {
+            filter.year = filter.year ? filter.year.trim() : `${new Date().getFullYear()}-${new Date().getFullYear()}`
+        }
+        let payload = { filter : {}};
+        payload.filter = filter;
         let url = `${this.baseUrl}/${this.reportUrl}`;
         return fetch(url,{
             method:'POST',
