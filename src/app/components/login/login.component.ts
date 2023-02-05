@@ -30,23 +30,32 @@ export class LoginComponent {
             this.loginInProgress = true;
             this.loginButtonText = "logging in...";
             this.authService.login(email, password)
-            .then(data => {
-                this.loginError = false;
-                this.loginInProgress = false;
-                this.loginButtonText = "Login";
-                sessionStorage.setItem('isLoggedIn', JSON.stringify(true));
-                this.authService.loginEvent.emit('login');
-                this.router.navigate(['expenses']);
+            .then(response => {
+                if(response.data) {
+                    this.loginError = false;
+                    this.loginInProgress = false;
+                    this.loginButtonText = "Login";
+                    sessionStorage.setItem('isLoggedIn', JSON.stringify(true));
+                    this.authService.loginEvent.emit('login');
+                    this.router.navigate(['expenses']);
+                }else{
+                    this.handleError(response.errors[0]);
+                }
+                
             })
             .catch((error) => {
                 // Handle Errors here.
-                this.loginInProgress = false;
-                this.loginButtonText = "Login";
-                this.loginError = true;
-                this.message = error.message;
-                console.log(error);
-                sessionStorage.setItem('isLoggedIn', JSON.stringify(false));
+                this.handleError(error);
             });
         }
+    }
+
+    handleError(error) {
+        this.loginInProgress = false;
+        this.loginButtonText = "Login";
+        this.loginError = true;
+        this.message = error.message;
+        console.log(error);
+        sessionStorage.setItem('isLoggedIn', JSON.stringify(false));
     }
 }

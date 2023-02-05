@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate{
 
     login(username, password) {
       let payload = {
-        username,password
+        username,password:btoa(password)
       };
       let baseUrl = sessionStorage.getItem('apiBaseUrl');
       let url = `${baseUrl}/${this.loginUrl}`;
