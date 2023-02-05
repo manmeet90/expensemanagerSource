@@ -14,13 +14,16 @@
           margin-top : 10px;
       }
   }
-
+  .alert{
+    width: 100%;
+  }
 </style>
 <div id="expenseform" class="row">
   <h4>Create New Expense</h4>
   <div *ngIf='showMsg' class="alert col s12 m6 green white-text">
       Expense saved successfully
   </div>
+  <br/>
   <div *ngIf="isLoading">Loading...</div>
   <form *ngIf="!isLoading" [formGroup]='expenseForm'>
       <div class="input-field col s12 m6">

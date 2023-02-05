@@ -8,8 +8,9 @@ declare var M: any;
 import {SortOrder, utils} from '../../utils/utils';
 import { ExpenseType } from '../../components/expenses/expenseType';
 enum ReportType {
-  ByDuration = 1,
+  ByYearMonth = 1,
   ByExpenseType = 2,
+  ByDuration = 3,
 };
 
 @Component({
@@ -22,6 +23,8 @@ export class ReportsComponent {
   yearsToGenerate = 20;
   
   years = ['2018', '2019', '2020', '2021', '2022'];
+  durations = [2,3,5];
+  currentSelectedPeriod = 5;
   reportData = {
     expensesByType: [],
     expensesByMonth: [],
@@ -44,7 +47,7 @@ export class ReportsComponent {
   public currentDurationForReport: string = `${new Date().getFullYear()}-${new Date().getFullYear()}`;
   validDurationRegex = /^\d{4}-\d{4}$/;
 
-  public reportType: ReportType = ReportType.ByDuration;
+  public reportType: ReportType = ReportType.ByYearMonth;
 
   public currentAmountSortBy: SortOrder = SortOrder.ASC;
 
@@ -53,6 +56,7 @@ export class ReportsComponent {
     private route: ActivatedRoute,
     private expenseType: ExpenseType) {
       let year = this.startYear;
+      this.years = [];
       while(year <= this.startYear+this.yearsToGenerate) {
         this.years.push(year.toString());
         year++;
@@ -114,16 +118,27 @@ export class ReportsComponent {
         year: this.currentDurationForReport,
         expenseType: this.currentExpenseTypeForReport
       };
+    } else if(this.reportType === ReportType.ByDuration) {
+      filter = {
+        duration: this.currentSelectedPeriod
+      }
     }
     this.expenseService.getExpenseReport(filter)
       .then(res => {
         if (res.errors) {
           console.log(res.errors);
         } else {
-          if(this.reportType === ReportType.ByDuration) {
+          if(this.reportType === ReportType.ByYearMonth) {
             this.reportData = res.data;
             this.reportData.expensesByType = orderBy(this.reportData.expensesByType, (d) => d.total, ['asc']);
             if (!this.month && this.reportData.expensesByMonth) {
+              this.prepareLineChartData();
+            }
+            this.generateReport();
+          }else if(this.reportType === ReportType.ByDuration) {
+            this.reportData = res.data;
+            this.reportData.expensesByType = orderBy(this.reportData.expensesByType, (d) => d.total, ['asc']);
+            if (this.reportData.expensesByMonth) {
               this.prepareLineChartData();
             }
             this.generateReport();
@@ -162,7 +177,7 @@ export class ReportsComponent {
 
   prepareLineChartData() {
     this.lineChartData = [];
-    if(this.reportType === ReportType.ByDuration) {
+    if(this.reportType === ReportType.ByYearMonth) {
       this.reportData.expensesByMonth.forEach(item => {
         this.lineChartData.push({ month: item.month, earning: item.income, expenses: item.expenditure, savings: item.saving });
       });
@@ -171,6 +186,14 @@ export class ReportsComponent {
       for(let year in dataGroupedByYear) {
         const yearData = dataGroupedByYear[year];
         this.lineChartData.push({ year: year, data: yearData.map(d => d.total || 0) });
+      }
+    } else if(this.reportType === ReportType.ByDuration) {
+      const dataGroupedByYear = groupBy(this.reportData.expensesByMonth, 'year');
+      for(let year in dataGroupedByYear) {
+        const yearData = dataGroupedByYear[year];
+        yearData.forEach(monthData => {
+          this.lineChartData.push({ year: monthData.year, month: monthData.month, earning: monthData.income, expenses: monthData.expenditure, savings: monthData.saving });
+        });
       }
     }
   }
@@ -181,13 +204,17 @@ export class ReportsComponent {
     Chart.defaults.global.elements.line.fill = false;
     var self = this;
     if (this.lineChartData) {
-      if(this.reportType === ReportType.ByDuration) {
+      if(this.reportType === ReportType.ByYearMonth || this.reportType === ReportType.ByDuration) {
         //sort by month
         this.lineChartData = sortBy(this.lineChartData, [function (data) {
           return self.MonthToNumber(data.month);
         }]);
         for (let idx in this.lineChartData) {
-          labels.push(this.lineChartData[idx].month);
+          if(this.reportType === ReportType.ByDuration) {
+            labels.push(`${this.lineChartData[idx].month} ${this.lineChartData[idx].year}`);
+          }else {
+            labels.push(this.lineChartData[idx].month);
+          }
           expensedata.push(this.lineChartData[idx].expenses);
           savingsdata.push(this.lineChartData[idx].savings);
           earningdata.push(this.lineChartData[idx].earning);
@@ -286,7 +313,7 @@ export class ReportsComponent {
   }
 
   isFormValid() {
-    return this.reportType === ReportType.ByDuration ? (this.year || this.month): (this.currentDurationForReport && this.currentExpenseTypeForReport && this.validDurationRegex.test(this.currentDurationForReport));
+    return this.reportType === ReportType.ByYearMonth ? (this.year || this.month): this.reportType === ReportType.ByDuration ? this.currentSelectedPeriod : (this.currentDurationForReport && this.currentExpenseTypeForReport && this.validDurationRegex.test(this.currentDurationForReport));
   }
 
   onYearChange(e: any) {
@@ -313,9 +340,11 @@ export class ReportsComponent {
     return (this.earn_year && this.earn_month && this.earning);
   }
 
-  onExepenseCategoryRowClicked(e, expenseType) {
+  onExpenseCategoryRowClicked(e, expenseType) {
     e.preventDefault();
-    this.router.navigate(['expenses'], { queryParams: { year: this.year, month: this.month, expenseType: expenseType } });
+    if(this.reportType !== ReportType.ByDuration){
+      this.router.navigate(['expenses'], { queryParams: { year: this.year, month: this.month, expenseType: expenseType } });
+    }
   }
 
   onSaveEarningBtnClicked() {
@@ -407,5 +436,9 @@ export class ReportsComponent {
 
   onReportCategoryChange(reportType: ReportType) {
     this.reportType = reportType;
+  }
+
+  onDurationSelected(duration: string) {
+    this.currentSelectedPeriod = parseInt(duration, 10);
   }
 }

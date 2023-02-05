@@ -176,10 +176,10 @@ export class ExpenseService {
     }
 
     getExpenseReport(filter){
-        if(filter.year && ! filter.expenseType) {
+        if(filter.year && !filter.expenseType) {
             filter.year = parseInt(filter.year, 10);
             filter.month = filter.month || null; 
-        } else {
+        } else if(!filter.duration) {
             filter.year = filter.year ? filter.year.trim() : `${new Date().getFullYear()}-${new Date().getFullYear()}`
         }
         let payload = { filter : {}};

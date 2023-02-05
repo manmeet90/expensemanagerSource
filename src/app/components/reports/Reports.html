@@ -74,6 +74,10 @@
         <input name="reportType" type="radio" (change)="onReportCategoryChange(2)" />
         <span>For an ExpenseType</span>
       </label>
+      <label>
+        <input name="reportType" type="radio" (change)="onReportCategoryChange(3)" />
+        <span>For a span of years</span>
+      </label>
     </div>
     <div *ngIf="reportType === 1">
       <div class="col s12">
@@ -103,6 +107,12 @@
         <input type="text" placeholder="yyyy-yyyy" [(ngModel)]="currentDurationForReport" name="duration_input" />
       </div>
     </div>
+    <div *ngIf="reportType === 3" class="col s12">
+      <label *ngFor="let duration of durations; let idx = index;">
+        <input name="durationReport" (change)="onDurationSelected(duration)" type="radio" [checked]="idx===durations.length-1" />
+        <span>Last {{duration}} years</span>
+      </label>
+    </div>
     <div class="col s12">
         <button class="btn  waves-effect waves-light" [disabled]="!isFormValid()" (click)='generateReportBtnClicked()'>Generate
             Report</button>
@@ -110,7 +120,7 @@
   </div>
   <br>
   <div class="col s12">
-    <table *ngIf="reportData?.expensesByType?.length>0 && reportType === 1" class="striped table table-bordered table-condensed">
+    <table *ngIf="reportData?.expensesByType?.length>0 && (reportType === 1 || reportType === 3)" class="striped table table-bordered table-condensed">
       <thead>
         <tr>
           <th>Category</th>
@@ -122,7 +132,7 @@
       <tbody>
         <tr [class.overspent]="month && report.total > 5000" id="{{report.expenseType}}" *ngFor="let report of reportData.expensesByType">
           <td>{{report.expenseType}}</td>
-          <td><a class="cursor" (click)="onExepenseCategoryRowClicked($event, report.expenseType)">{{toLocale(report.total)}}</a></td>
+          <td><a class="cursor" (click)="onExpenseCategoryRowClicked($event, report.expenseType)">{{toLocale(report.total)}}</a></td>
         </tr>
         <tr>
           <td>Expenditure</td>
